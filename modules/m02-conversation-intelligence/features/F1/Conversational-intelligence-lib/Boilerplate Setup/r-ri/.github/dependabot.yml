@@ -1,0 +1,29 @@
+version: 2
+updates:
+  # Enable daily updates for Node.js (pnpm packages) in the api
+  - package-ecosystem: "npm"
+    directory: "/Boilerplate Setup/r-revenue-intelligence"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 5
+
+  # Enable daily updates for Node.js in root (if any)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 3
+
+  # Enable daily updates for Python AI Services
+  - package-ecosystem: "pip"
+    directory: "/Boilerplate Setup/r-revenue-intelligence/apps/ai-services"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 5
+
+  # Enable daily updates for Python Transcription Service
+  - package-ecosystem: "pip"
+    directory: "/Boilerplate Setup/r-revenue-intelligence/apps/transcription-service"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 3

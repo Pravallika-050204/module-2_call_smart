@@ -1,0 +1,29 @@
+# R-Revenue Intelligence Platform CODEOWNERS
+# This file automatically routes code reviews to the designated module leads.
+
+# Global owners for core infrastructure and platform docs
+*                                          @lead-architect @platform-devops
+
+# Platform Core Ownership
+/modules/platform-core/                    @platform-devops @lead-architect
+/apps/api/src/platform-core/               @platform-devops @lead-architect
+
+# Module-specific backend ownership (NestJS Modular Monolith)
+/apps/api/src/modules/m01-capture/         @team1-lead-backend
+/apps/api/src/modules/m02-sales-engagement/ @team2-lead-backend
+/apps/api/src/modules/m03-revenue-graph/   @team3-lead-backend
+/apps/api/src/modules/m04-conversation-intelligence/ @team4-lead-backend
+/apps/api/src/modules/m05-smart-tracking/  @team5-lead-backend
+/apps/api/src/modules/m06-insight-generation/ @team6-lead-backend
+/apps/api/src/modules/m07-deal-account/    @team7-lead-backend
+/apps/api/src/modules/m08-execution/       @team8-lead-backend
+/apps/api/src/modules/m09-forecasting/     @team9-lead-backend
+/apps/api/src/modules/m10-coaching/        @team10-lead-backend
+
+# AI and Speech Services (Python FastAPI)
+/apps/ai-services/                         @platform-ai-lead @lead-architect
+/apps/transcription-service/               @platform-ai-lead @team1-lead-backend
+
+# Infrastructure & CI/CD
+/infra/                                    @platform-devops
+/.github/workflows/                        @platform-devops

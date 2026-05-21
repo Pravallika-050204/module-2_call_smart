@@ -1,0 +1,99 @@
+version: '3.9'
+
+services:
+  # -------------------------
+  # Core Infrastructure
+  # -------------------------
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: rri_postgres
+    environment:
+      POSTGRES_DB: revenue_intel
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d revenue_intel"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: rri_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.7
+    container_name: rri_meilisearch
+    ports:
+      - "7700:7700"
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-masterkey}
+    volumes:
+      - meili_data:/meili_data
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24
+    container_name: rri_clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+
+  # -------------------------
+  # Application Services
+  # -------------------------
+  api:
+    build: 
+      context: .
+      dockerfile: ./apps/api/Dockerfile
+    container_name: rri_api
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/revenue_intel
+      REDIS_URL: redis://redis:6379
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+    env_file:
+      - .env
+
+  ai-services:
+    build: ./apps/ai-services
+    container_name: rri_ai_services
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+
+  transcription-service:
+    build: ./apps/transcription-service
+    container_name: rri_transcription_service
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+
+volumes:
+  pgdata:
+  meili_data:
+  clickhouse_data:

@@ -1,0 +1,140 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model M02ConversationIntelligenceRecord {
+  id        String   @id @default(uuid())
+  tenantId  String
+  name      String
+  createdAt DateTime @default(now())
+
+  @@map("m02_conversation_intelligence")
+}
+
+model M01Call {
+  id              String   @id @default(uuid()) @db.Uuid
+  tenantId        String   @map("tenant_id") @db.Uuid
+  title           String   @db.VarChar(255)
+  durationSeconds Int      @map("duration_seconds")
+  transcript      String?
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@map("m01_calls")
+}
+
+model M02Email {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  subject   String   @db.VarChar(255)
+  body      String
+  sender    String   @db.VarChar(255)
+  recipient String   @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@map("m02_emails")
+}
+
+model M02SavedSearch {
+  id          String   @id @default(uuid()) @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  name        String   @db.VarChar(255)
+  queryString String?  @map("query_string")
+  filters     Json     @default("{}")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@map("m02_saved_searches")
+}
+
+model M02SearchIndexSyncLog {
+  id             String    @id @default(uuid()) @db.Uuid
+  tenantId       String    @map("tenant_id") @db.Uuid
+  entityType     String    @map("entity_type") @db.VarChar(50)
+  entityId       String    @map("entity_id") @db.Uuid
+  syncStatus     String    @map("sync_status") @db.VarChar(20)
+  syncError      String?   @map("sync_error")
+  idempotencyKey String    @unique @map("idempotency_key") @db.VarChar(255)
+  indexedAt      DateTime? @map("indexed_at") @db.Timestamptz
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@map("m02_search_index_sync_logs")
+}
+
+model M02Tracker {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  name      String   @db.VarChar(255)
+  keywords  String[] @default([])
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@map("m02_trackers")
+}
+
+model M02TrackerDetection {
+  id               String   @id @default(uuid()) @db.Uuid
+  tenantId         String   @map("tenant_id") @db.Uuid
+  trackerId        String   @map("tracker_id") @db.Uuid
+  entityType       String   @map("entity_type") @db.VarChar(50)
+  entityId         String   @map("entity_id") @db.Uuid
+  matchedKeyword   String   @map("matched_keyword") @db.VarChar(255)
+  snippet          String
+  timestampSeconds Int?     @map("timestamp_seconds")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("m02_tracker_detections")
+}
+
+model M02Embedding {
+  id           String   @id @default(uuid()) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  entityType   String   @map("entity_type") @db.VarChar(50)
+  entityId     String   @map("entity_id") @db.Uuid
+  vector       Float[]
+  contentChunk String   @map("content_chunk")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("m02_embeddings")
+}
+
+model M02Folder {
+  id          String   @id @default(uuid()) @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  name        String   @db.VarChar(255)
+  libraryType String   @map("library_type") @db.VarChar(50)
+  createdBy   String   @map("created_by") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("m02_folders")
+}
+
+model M02FolderItem {
+  id         String   @id @default(uuid()) @db.Uuid
+  folderId   String   @map("folder_id") @db.Uuid
+  entityType String   @map("entity_type") @db.VarChar(50)
+  entityId   String   @map("entity_id") @db.Uuid
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("m02_folder_items")
+}
+
+model M02FolderAccessLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  folderId   String   @map("folder_id") @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  entityId   String   @map("entity_id") @db.Uuid
+  accessedAt DateTime @default(now()) @map("accessed_at") @db.Timestamptz
+
+  @@map("m02_folder_access_logs")
+}
+
